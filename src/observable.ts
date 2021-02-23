@@ -17,37 +17,38 @@ export class Observable {
   }
 
   // public api for registering an observer
-  subscribe(onNext: any, onError?: any, onCompleted?: any) {
+  subscribe(onNextOrObserver: any, onError?: any, onCompleted?: any) {
     debugger;
-    if (typeof onNext === 'function') {
+    if (typeof onNextOrObserver === 'function') {
       return this._subscribe({
-        onNext: onNext,
+        onNext: onNextOrObserver,
         onError: onError || (() => { }),
         onCompleted: onCompleted || (() => { })
       });
     } else {
-      return this._subscribe(onNext);
+      return this._subscribe(onNextOrObserver);
     }
   }
 
   static of(...args: any[]): Observable {
     debugger;
-    return new Observable((obs: any) => {
+    const subscribeFn = (observer: any) => {
       debugger;
-      args.forEach(val => obs.onNext(val));
-      obs.onCompleted();
+      args.forEach(val => observer.onNext(val));
+      observer.onCompleted();
 
       return {
         unsubscribe: () => {
           // just make sure none of the original subscriber's methods are never called.
-          obs = {
+          observer = {
             onNext: () => { },
             onError: () => { },
             onCompleted: () => { }
           };
         }
       };
-    });
+    }
+    return new Observable(subscribeFn);
   }
 
   static from(iterable: any): Observable {
@@ -85,13 +86,14 @@ export class Observable {
 
   map(projFn): Observable {
     debugger;
-    return new Observable((observer) => {
+    const subscribeFn = (observer) => {
       return this.subscribe(
         (val) => observer.onNext(projFn(val)),
         (e) => observer.onError(e),
         () => observer.onCompleted()
       );
-    });
+    }
+    return new Observable(subscribeFn);
   }
 
   filter(predicateFn): Observable {
