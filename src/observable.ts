@@ -10,6 +10,7 @@ export class Observable {
     * onNext, onError, and onCompleted
   */
   constructor(subscribe?: any) {
+    debugger;
     if (subscribe) {
       this._subscribe = subscribe;
     }
@@ -17,6 +18,7 @@ export class Observable {
 
   // public api for registering an observer
   subscribe(onNext: any, onError?: any, onCompleted?: any) {
+    debugger;
     if (typeof onNext === 'function') {
       return this._subscribe({
         onNext: onNext,
@@ -29,7 +31,9 @@ export class Observable {
   }
 
   static of(...args: any[]): Observable {
+    debugger;
     return new Observable((obs: any) => {
+      debugger;
       args.forEach(val => obs.onNext(val));
       obs.onCompleted();
 
@@ -80,6 +84,7 @@ export class Observable {
   }
 
   map(projFn): Observable {
+    debugger;
     return new Observable((observer) => {
       return this.subscribe(
         (val) => observer.onNext(projFn(val)),
